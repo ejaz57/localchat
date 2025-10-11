@@ -2,9 +2,7 @@
 
 > A private web interface for local LLMs. Works with Ollama, LM Studio, and any OpenAI-compatible API.
 
-<img width="512" height="288" alt="image" src="https://github.com/user-attachments/assets/f6791b92-be74-4fac-b927-47ddef714420" />
-
-
+ 
 ## ✨ Peculiarities
 - 🔒 Complete privacy—everything works locally
 - 🎨 Dark/light theme (automatic by system)
