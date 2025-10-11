@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local AI - Your Intelligent Agent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for microphone icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS to override/extend Tailwind for specific effects */
+        :root {
+            --bg-gradient-start: #1c1c3a;
+            --bg-gradient-end: #0c0c1e;
+            --card-bg-light: rgba(255, 255, 255, 0.05); /* Lighter translucent background for cards */
+            --card-bg-dark: rgba(0, 0, 0, 0.2); /* Darker translucent background for cards */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-color-light: #e0e0e0;
+            --text-color-dark: #b0b0b0;
+            --primary-accent: #8e8eec; /* Soft purple */
+            --secondary-accent: #a9a9ed; /* Lighter purple */
+            --chat-bubble-user: #8e8eec;
+            --chat-bubble-agent: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-color-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Hide scrollbars */
+            margin: 0;
+            perspective: 1200px; /* For CSS 3D perspective */
+        }
+
+        /* Particle Background */
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: var(--primary-accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFadeMove linear infinite;
+            box-shadow: 0 0 5px var(--primary-accent);
+        }
+
+        @keyframes particleFadeMove {
+            0% { transform: translateZ(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.2; }
+            80% { opacity: 0.1; }
+            100% { transform: translate3d(var(--x), var(--y), var(--z)) scale(var(--s)); opacity: 0; }
+        }
+
+        /* Main UI Container */
+        .aether-ui-container {
+            position: relative;
+            z-index: 1;
+            width: 95%;
+            max-width: 800px;
+            height: 95vh;
+            max-height: 900px;
+            background: var(--card-bg-dark); /* Fallback */
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 40px rgba(142, 142, 236, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg-light); /* Slightly lighter header */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 30px 30px 0 0;
+            transform: translateZ(20px); /* Lift header slightly */
+        }
+
+        .header h1 {
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--primary-accent);
+            text-shadow: 0 0 5px rgba(142, 142, 236, 0.5);
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-button {
+            background: var(--card-bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 8px 15px;
+            color: var(--text-color-light);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-accent);
+            color: var(--primary-accent);
+            box-shadow: 0 2px 10px rgba(142, 142, 236, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Chat History */
+        .chat-history {
+            flex-grow: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+            transform: translateZ(10px); /* Lift chat history slightly */
+        }
+
+        .chat-history::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .message-container {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-end;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: messageFadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes messageFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-container.agent {
+            justify-content: flex-start;
+        }
+
+        .message-container.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .message-container.user .message-bubble {
+            background-color: var(--chat-bubble-user);
+            color: white;
+            border-bottom-right-radius: 5px; /* Tail for user bubble */
+        }
+
+        .message-container.agent .message-bubble {
+            background-color: var(--chat-bubble-agent);
+            color: var(--text-color-light);
+            border-bottom-left-radius: 5px; /* Tail for agent bubble */
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            margin: 0 10px;
+            background: linear-gradient(45deg, var(--primary-accent), var(--secondary-accent));
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .message-container.user .message-avatar { order: 2; }
+        .message-container.agent .message-avatar { order: 1; }
+
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 18px;
+            background-color: var(--chat-bubble-agent);
+            border-radius: 20px;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-color-dark);
+            border-radius: 50%;
+            animation: dotPulse 1.4s infinite ease-in-out both;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes dotPulse {
+            0%, 80%, 100% { transform: scale(0); opacity: 0; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Chat Input Area */
+        .chat-input-area {
+            padding: 20px 30px;
+            border-top: 1px solid var(--border-color);
+            background: var(--card-bg-light);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 0 0 30px 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            transform: translateZ(20px); /* Lift input area slightly */
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: var(--text-color-light);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary-accent);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 10px rgba(142, 142, 236, 0.3);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-color-dark);
+        }
+
+        .action-icon-button {
+            background: linear-gradient(45deg, var(--primary-accent), var(--secondary-accent));
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(142, 142, 236, 0.4);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .action-icon-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(142, 142, 236, 0.6);
+        }
+
+        .action-icon-button:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 5px rgba(142, 142, 236, 0.2);
+        }
+
+        .microphone-button.recording {
+            background: linear-gradient(45deg, #ff6b6b, #ff9b9b);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.6);
+            animation: pulseRed 1.2s infinite ease-in-out;
+        }
+
+        @keyframes pulseRed {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255, 107, 107, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4); }
+        }
+
+        /* Modals (About, GitHub) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-bg-dark);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 50px rgba(142, 142, 236, 0.3);
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-content h2 {
+            font-size: 1.8rem;
+            color: var(--primary-accent);
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(142, 142, 236, 0.6);
+        }
+
+        .modal-content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text-color-light);
+        }
+
+        .modal-content a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease-in-out;
+            text-shadow: 0 0 5px rgba(142, 142, 236, 0.4);
+        }
+
+        .modal-content a:hover {
+            color: var(--secondary-accent);
+            text-decoration: underline;
+        }
+
+        .modal-close-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff9b9b);
+            border: none;
+            border-radius: 15px;
+            padding: 10px 25px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
+            margin-top: 20px;
+        }
+
+        .modal-close-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="particle-bg" id="particle-bg"></div>
+
+    <div class="aether-ui-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Aether AI</h1>
+            <div class="header-actions">
+                <button class="action-button" id="about-button">About Agent</button>
+                <button class="action-button" id="github-button">My GitHub</button>
+            </div>
+        </div>
+
+        <!-- Chat History -->
+        <div class="chat-history" id="chat-history">
+            <!-- Initial Message -->
+            <div class="message-container agent">
+                <div class="message-avatar">AI</div>
+                <div class="message-bubble">Hello! I am Localr AI, your intelligent assistant. How can I help you today?</div>
+            </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="user-input" placeholder="Type your message...">
+            <button class="action-icon-button" id="microphone-button">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button class="action-icon-button" id="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- About Agent Modal -->
+    <div class="modal-overlay" id="about-modal">
+        <div class="modal-content">
+            <h2>About Localr AI Agent</h2>
+            <p>I am Local AI, a simulated intelligent agent designed to assist you. I can process text inputs and provide responses. My core purpose is to explore interactive AI interfaces and user experiences.</p>
+            <p>This UI is built with HTML, CSS (Tailwind CSS for utilities, custom CSS for effects), and JavaScript, showcasing a modern, minimalist design inspired by iOS and subtle 3D aesthetics.</p>
+            <button class="modal-close-button">Close</button>
+        </div>
+    </div>
+
+    <!-- My GitHub Modal -->
+    <div class="modal-overlay" id="github-modal">
+        <div class="modal-content">
+            <h2>My GitHub Profile</h2>
+            <p>Explore more of my work and contributions on GitHub:</p>
+            <p><a href="https://github.com/mscbuild/localchat" target="_blank">github.com/mscbuild/localchat</a></p>
+            <button class="modal-close-button">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatHistory = document.getElementById('chat-history');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const microphoneButton = document.getElementById('microphone-button');
+            const particleBg = document.getElementById('particle-bg');
+            const aboutButton = document.getElementById('about-button');
+            const githubButton = document.getElementById('github-button');
+            const aboutModal = document.getElementById('about-modal');
+            const githubModal = document.getElementById('github-modal');
+
+            // --- Particle Background Generation ---
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particleBg.appendChild(particle);
+
+                const size = Math.random() * 2 + 1; // 1px to 3px
+                const x = Math.random() * 100 + 'vw';
+                const y = Math.random() * 100 + 'vh';
+                const z = Math.random() * 500 - 250 + 'px'; // -250px to 250px for 3D depth
+                const duration = Math.random() * 10 + 10; // 10s to 20s
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = x;
+                particle.style.top = y;
+                particle.style.setProperty('--x', x);
+                particle.style.setProperty('--y', y);
+                particle.style.setProperty('--z', z);
+                particle.style.setProperty('--s', Math.random() * 1 + 0.5); // scale between 0.5 and 1.5
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `-${Math.random() * duration}s`; // Stagger animation start
+            }
+
+            for (let i = 0; i < 80; i++) {
+                createParticle();
+            }
+
+            // --- Chat Functionality ---
+            function appendMessage(sender, message) {
+                const messageContainer = document.createElement('div');
+                messageContainer.classList.add('message-container', sender);
+                messageContainer.style.animationDelay = '0.1s'; // Slight delay for animation effect
+
+                const avatar = document.createElement('div');
+                avatar.classList.add('message-avatar');
+                avatar.textContent = sender === 'user' ? 'You' : 'AI';
+
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('message-bubble');
+                messageBubble.textContent = message;
+
+                if (sender === 'user') {
+                    messageContainer.appendChild(messageBubble);
+                    messageContainer.appendChild(avatar);
+                } else {
+                    messageContainer.appendChild(avatar);
+                    messageContainer.appendChild(messageBubble);
+                }
+                chatHistory.appendChild(messageContainer);
+                chatHistory.scrollTop = chatHistory.scrollHeight; // Scroll to bottom
+            }
+
+            function showLoadingIndicator() {
+                const loadingContainer = document.createElement('div');
+                loadingContainer.classList.add('message-container', 'agent');
+                loadingContainer.id = 'loading-indicator';
+
+                const avatar = document.createElement('div');
+                avatar.classList.add('message-avatar');
+                avatar.textContent = 'AI';
+
+                const loadingBubble = document.createElement('div');
+                loadingBubble.classList.add('loading-indicator');
+                loadingBubble.innerHTML = `<div class="dot"></div><div class="dot"></div><div class="dot"></div>`;
+
+                loadingContainer.appendChild(avatar);
+                loadingContainer.appendChild(loadingBubble);
+                chatHistory.appendChild(loadingContainer);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+
+            function removeLoadingIndicator() {
+                const loadingIndicator = document.getElementById('loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+
+            const aiResponses = [
+                "I'm still under development, but I'm learning fast!",
+                "That's an interesting query. Can you tell me more?",
+                "My current capabilities allow me to process text and provide information.",
+                "Thank you for your input. I'm always improving.",
+                "I'm designed to assist with a variety of tasks. What's on your mind?",
+                "Processing your request... Please hold.",
+                "My knowledge base is constantly expanding.",
+                "I understand. Let me look into that for you.",
+                "Is there anything else I can assist with?",
+                "I am ready for your next command."
+            ];
+
+            function getAiResponse(userMessage) {
+                // Simple keyword-based responses
+                userMessage = userMessage.toLowerCase();
+                if (userMessage.includes("hello") || userMessage.includes("hi")) {
+                    return "Hello there! How may I be of service?";
+                } else if (userMessage.includes("how are you")) {
+                    return "As an AI, I don't experience feelings, but I'm operating optimally. How are you?";
+                } else if (userMessage.includes("your name")) {
+                    return "I am Local AI, your intelligent agent.";
+                } else if (userMessage.includes("github")) {
+                    return "You can find more about my developer on GitHub: https://github.com/mscbuild";
+                } else if (userMessage.includes("time")) {
+                    const now = new Date();
+                    return `The current time is ${now.toLocaleTimeString()}.`;
+                } else if (userMessage.includes("date")) {
+                    const now = new Date();
+                    return `Today's date is ${now.toLocaleDateString()}.`;
+                } else {
+                    const randomIndex = Math.floor(Math.random() * aiResponses.length);
+                    return aiResponses[randomIndex];
+                }
+            }
+
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+
+                appendMessage('user', message);
+                userInput.value = '';
+
+                showLoadingIndicator();
+
+                // Simulate AI typing/thinking time
+                setTimeout(() => {
+                    removeLoadingIndicator();
+                    const aiResponse = getAiResponse(message);
+                    appendMessage('agent', aiResponse);
+                    // Speak the response if voice is enabled (simulated)
+                    if (window.speechSynthesis) {
+                        const utterance = new SpeechSynthesisUtterance(aiResponse);
+                        utterance.rate = 1.0; // Normal speech rate
+                        utterance.pitch = 1.0; // Normal pitch
+                        window.speechSynthesis.speak(utterance);
+                    }
+                }, Math.random() * 1500 + 800); // 0.8s to 2.3s delay
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            // --- Voice Input (Web Speech API Simulation) ---
+            let recognition;
+            let isRecording = false;
+
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = false; // Only one result per recording
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    isRecording = true;
+                    microphoneButton.classList.add('recording');
+                    userInput.placeholder = "Listening...";
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    userInput.value = transcript;
+                    sendMessage(); // Send message automatically after speech
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    userInput.placeholder = "Error listening. Type your message.";
+                    if (event.error === 'not-allowed') {
+                        // User denied microphone access
+                        alert('Microphone access denied. Please allow microphone in your browser settings to use voice input.');
+                    } else {
+                         // Fallback for alerts. In a real app, use a custom modal.
+                        alert(`Voice input error: ${event.error}. Please type your message.`);
+                    }
+                };
+
+                recognition.onend = () => {
+                    isRecording = false;
+                    microphoneButton.classList.remove('recording');
+                    userInput.placeholder = "Type your message...";
+                };
+
+                microphoneButton.addEventListener('click', () => {
+                    if (isRecording) {
+                        recognition.stop();
+                    } else {
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            console.error('Recognition start error:', e);
+                            alert('Failed to start voice recognition. Please ensure your browser supports it and microphone access is granted.');
+                        }
+                    }
+                });
+            } else {
+                // Browser doesn't support Web Speech API
+                microphoneButton.style.display = 'none'; // Hide microphone button
+                console.warn('Web Speech API not supported in this browser.');
+                userInput.placeholder = "Voice input not supported. Type your message...";
+            }
+
+            // --- Modals Functionality ---
+            function openModal(modal) {
+                modal.classList.add('active');
+            }
+
+            function closeModal(modal) {
+                modal.classList.remove('active');
+            }
+
+            aboutButton.addEventListener('click', () => openModal(aboutModal));
+            githubButton.addEventListener('click', () => openModal(githubModal));
+
+            // Close buttons for modals
+            aboutModal.querySelector('.modal-close-button').addEventListener('click', () => closeModal(aboutModal));
+            githubModal.querySelector('.modal-close-button').addEventListener('click', () => closeModal(githubModal));
+
+            // Close modal on overlay click
+            aboutModal.addEventListener('click', (e) => {
+                if (e.target === aboutModal) {
+                    closeModal(aboutModal);
+                }
+            });
+            githubModal.addEventListener('click', (e) => {
+                if (e.target === githubModal) {
+                    closeModal(githubModal);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
