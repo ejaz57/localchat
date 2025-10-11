@@ -2,7 +2,8 @@
 
 > A private web interface for local LLMs. Works with Ollama, LM Studio, and any OpenAI-compatible API.
 
-![LocalChat Screenshot](https://github.com/your-username/localchat/raw/main/screenshot.png)
+<img width="512" height="288" alt="image" src="https://github.com/user-attachments/assets/f6791b92-be74-4fac-b927-47ddef714420" />
+
 
 ## ✨ Peculiarities
 - 🔒 Complete privacy—everything works locally
@@ -44,5 +45,15 @@ docker run -p 3000:3000 --network host localchat
 ~~~bash
 OLLAMA_BASE_URL=http://192.168.1.100:11434 npm run dev
 ~~~
+## ✅ What's next?
 
+**Run in terminal:**
+~~~bash
+git init
+git add .
+git commit -m "feat: initial commit"
+git branch -M main
+git remote add origin https://github.com/your-username/localchat.git
+git push -u origin main
+~~~
 ## 📄 MIT License
