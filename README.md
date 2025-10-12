@@ -30,7 +30,7 @@
 
 ### Local launch
 ~~~bash
-git clone https://github.com/your-username/localchat.git
+git clone https://github.com/mscbuild/localchat.git
 cd localchat
 npm install
 npm run dev
