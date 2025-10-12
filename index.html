@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta http-equiv="ClearType" content="true" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Local AI - Your Intelligent Agent</title>
+     <meta name="robots" content="noindex, nofollow" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for microphone icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -91,33 +95,6 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
  
-
-        .bot-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .controls {
-            display: flex;
-            gap: 1rem;
-        }
         /* Header */
         .header {
             padding: 20px 30px;
@@ -438,12 +415,8 @@
     <div class="aether-ui-container">
         <!-- Header -->
         <div class="header">
-            <h1>Local AI</h1>
-            <div class="bot-status">
-                    <div class="status-indicator"></div>
-                    <span>Online</span>
-            </div>
-                <div class="header-actions">
+            <h1>Chat AI</h1>
+              <div class="header-actions">
                 <button class="action-button" id="about-button">About Agent</button>
                 <button class="action-button" id="github-button">My GitHub</button>
             </div>
@@ -461,10 +434,7 @@
         <!-- Chat Input Area -->
         <div class="chat-input-area">
             <input type="text" class="chat-input" id="user-input" placeholder="Type your message...">
-             <button class="action-icon-button" id="">
-                <i class="fas fa-paperclip"></i>
-            </button>
-            <button class="action-icon-button" id="microphone-button">
+             <button class="action-icon-button" id="microphone-button">
                 <i class="fas fa-microphone"></i>
             </button>
             <button class="action-icon-button" id="send-button">
