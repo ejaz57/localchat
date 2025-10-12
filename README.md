@@ -62,7 +62,7 @@ git init
 git add .
 git commit -m "feat: initial commit"
 git branch -M main
-git remote add origin https://github.com/your-username/localchat.git
+git remote add origin https://github.com/mscbuild/localchat.git
 git push -u origin main
 ~~~
 ## 📄 MIT License
